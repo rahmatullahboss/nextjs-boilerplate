@@ -5,19 +5,33 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
-    "start": "next start"
+    "start": "next start",
+    "payload": "cross-env PAYLOAD_CONFIG_PATH=src/payload.config.ts payload",
+    "migrate": "npm run payload migrate",
+    "migrate:create": "npm run payload migrate:create",
+    "migrate:status": "npm run payload migrate:status",
+    "db:seed": "ts-node ./src/seed/index.ts"
   },
   "dependencies": {
+    "@payloadcms/db-vercel-postgres": "^3.49.1",
+    "@payloadcms/next": "^3.49.1",
+    "@payloadcms/richtext-lexical": "^3.49.1",
+    "@vercel/postgres": "^0.10.0",
+    "cross-env": "^7.0.3",
+    "graphql": "^16.11.0",
+    "next": "15.5.3",
+    "payload": "^3.49.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.3"
+    "sharp": "^0.32.6"
   },
   "devDependencies": {
-    "typescript": "^5",
-    "@types/node": "^20",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20.19.17",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
   }
 }
