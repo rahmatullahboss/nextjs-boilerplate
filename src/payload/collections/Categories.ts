@@ -1,10 +1,13 @@
 import type { CollectionConfig } from 'payload'
 import { admins, adminsOnly, anyone } from '../access/index.js'
 
-export const Media: CollectionConfig = {
-  slug: 'media',
+export const Categories: CollectionConfig = {
+  slug: 'categories',
+  admin: {
+    useAsTitle: 'name',
+  },
   access: {
-    read: anyone,
+    read: anyone, // Anyone can read categories
     create: admins,
     update: admins,
     delete: admins,
@@ -14,13 +17,14 @@ export const Media: CollectionConfig = {
   },
   fields: [
     {
-      name: 'alt',
+      name: 'name',
       type: 'text',
+      required: true,
+    },
+    {
+      name: 'description',
+      type: 'textarea',
       required: false,
-      admin: {
-        description: 'Optional. Provide descriptive text for accessibility when available.',
-      },
     },
   ],
-  upload: true,
 }

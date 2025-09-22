@@ -5,20 +5,21 @@ This is a fullstack e-commerce application built with Next.js, Payload CMS v3, a
 ## Features
 
 ### Public Features (No Authentication Required)
-- Browse Products: View available snacks with images, descriptions, prices, and categories
+- Browse Products: View available items with images, descriptions, prices, and categories
 - Responsive Design: Fully responsive interface that works on desktop, tablet, and mobile devices
 
 ### Authenticated User Features
 - User Registration & Login: Secure authentication system
-- Place Orders: Add snacks to cart and place orders
+- Place Orders: Add items to cart and place orders
 - Order History: View personal order history with status tracking
 - Cancel Pending Orders: Cancel orders while they are still pending
 
 ### Admin Features
 - Admin Dashboard: Comprehensive order management
 - Order Management: Update order status through the 6-status workflow
-- Inventory Management: Manage snack inventory through Payload CMS admin panel
+- Inventory Management: Manage item inventory through Payload CMS admin panel
 - Delivery Settings: Configure delivery charges and free-delivery thresholds
+- Category Management: Organize products into categories
 
 ## Tech Stack
 - Frontend: Next.js 15, React 19, TypeScript
@@ -26,6 +27,7 @@ This is a fullstack e-commerce application built with Next.js, Payload CMS v3, a
 - Database: Vercel Postgres
 - Authentication: Built-in Payload authentication with role-based access
 - Media: Sharp for image processing
+- UI Components: Radix UI, Tailwind CSS
 
 ## Getting Started
 
@@ -33,6 +35,7 @@ This is a fullstack e-commerce application built with Next.js, Payload CMS v3, a
 - Node.js 18+ or 20+
 - npm 9+ or 10+
 - PostgreSQL database (Vercel Postgres recommended)
+- Docker (for local development)
 
 ### Local Development with Docker Postgres
 
@@ -76,7 +79,7 @@ npm run dev
 1. Visit [http://localhost:3000/admin](http://localhost:3000/admin) to log in with the admin user:
    - Email: admin@example.com
    - Password: Admin123! (change on first login)
-2. View available snacks at [http://localhost:3000](http://localhost:3000)
+2. View available items at [http://localhost:3000](http://localhost:3000)
 3. Test ordering by creating a regular user account
 
 ## Deployment to Vercel
@@ -100,7 +103,8 @@ npm run dev
 ├── src/
 │   ├── payload.config.ts # Payload configuration
 │   ├── payload/
-│   │   ├── collections/  # Payload collections (Users, Snacks, Orders, etc.)
+│   │   ├── collections/  # Payload collections (Users, Items, Orders, etc.)
+│   │   ├── access/       # Access control functions
 │   │   └── globals/      # Payload globals (if any)
 │   ├── migrations/       # Database migrations
 │   └── seed/             # Data seeding scripts
@@ -121,29 +125,47 @@ npm run dev
 - `npm run migrate:create` - Create a new migration
 - `npm run migrate:status` - Check migration status
 - `npm run db:seed` - Seed the database with initial data
+- `npm run generate:types` - Generate TypeScript types from Payload config
+- `npm run generate:importmap` - Generate import map for Payload
 
 ## Data Model
 
 ### Users
 - Email, first name, last name
+- Customer number and delivery zone
+- Shipping address (line1, line2, city, state, postal code, country)
 - Role-based authentication (user/admin)
 - Default role: 'user'
 
-### Snacks
-- Name, description, price, category
-- Image upload with media relation
-- Availability toggle
-- Categories: Chips, Candy, Cookies, Nuts, Crackers, Drinks
+### Items (Products)
+- Name, short description, full description
+- Price and availability toggle
+- Image upload with media relation or external image URL
+- Category relationship
+
+### Categories
+- Name and description
+- Used to organize items
 
 ### Orders
 - User relationship
-- Array of items (snack + quantity)
-- Total amount calculation
+- Customer details (name, email, phone number)
+- Payment method (Cash on Delivery, bKash, Nagad)
+- Payment details (sender number, transaction ID)
+- Array of items (item + quantity)
 - Status tracking (pending/processing/shipped/completed/cancelled/refunded)
+- Financial details (subtotal, shipping charge, total amount)
+- Delivery zone and free delivery status
+- Shipping address
+- Device type and user agent for analytics
 
 ### Delivery Settings
 - Single-record collection managed by admins
-- Fields: inside/outside Dhaka delivery charges and the free-delivery threshold
+- Label for identification
+- Inside/outside Dhaka delivery charges
+- Free delivery threshold
+- Digital payment delivery charge
+- Shipping highlight title and subtitle
 
 ### Media
 - Image upload and management
@@ -151,9 +173,9 @@ npm run dev
 
 ## Access Control
 
-- Public: can read Snacks (only available=true)
+- Public: can read Items and Categories
 - Authenticated user: can create Orders; can read their own Orders; can cancel when status=pending
-- Admin: full access to Orders + Snacks + DeliverySettings; can update order status
+- Admin: full access to all collections; can update order status
 
 ## Common Commands
 
@@ -178,8 +200,58 @@ npm run db:seed
 ### Payload CMS
 ```bash
 # Generate TypeScript types
-npm run payload generate:types
+npm run generate:types
+
+# Generate import map
+npm run generate:importmap
 
 # List all Payload commands
 npm run payload
 ```
+
+## Environment Variables
+
+The following environment variables are required:
+
+- `PAYLOAD_SECRET` - A random string for Payload CMS encryption
+- `POSTGRES_URL` - Your Vercel Postgres connection string (for production)
+- `DATABASE_URL` - Your local PostgreSQL connection string (for development)
+- `NEXT_PUBLIC_SERVER_URL` - Your server URL
+
+Optional variables for media storage:
+- `BLOB_READ_WRITE_TOKEN` - Vercel Blob storage token
+- `S3_BUCKET`, `S3_REGION`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY` - S3 storage credentials
+
+Optional variables for email:
+- `GMAIL_USER` - Gmail address for sending emails
+- `GOOGLE_APP_PASSWORD` - App password for Gmail
+- `EMAIL_DEFAULT_FROM_NAME` - Default sender name
+- `ORDER_NOTIFICATIONS_EMAIL` - Email for order notifications
+
+## Troubleshooting
+
+### Database Connection Issues
+- Ensure Docker is running and the PostgreSQL container is active
+- Verify the DATABASE_URL in your .env file matches the docker-compose.yml configuration
+- Check that the PostgreSQL port (5432) is not being used by another service
+
+### Payload Admin Access
+- If you can't log in to the admin panel, ensure you've run the seed script
+- The default admin credentials are email: admin@example.com, password: Admin123!
+- Remember to change the password on first login
+
+### Migration Errors
+- If migrations fail, check that your database connection is working
+- You may need to reset your database with `docker-compose down -v` and start over
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and ensure no errors
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.

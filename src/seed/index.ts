@@ -1,5 +1,5 @@
 import { getPayload } from 'payload'
-import config from '../payload.config'
+import config from '../payload.config.js'
 
 const seed = async () => {
   const payload = await getPayload({ config })
@@ -13,75 +13,106 @@ const seed = async () => {
       firstName: 'Admin',
       lastName: 'User',
       role: 'admin',
+      deliveryZone: 'inside_dhaka',
     },
   })
 
   console.log('Admin user created:', adminUser.email)
 
+  // Create categories
+  const categoriesData = [
+    { name: 'Chips', description: 'Crispy and delicious chips' },
+    { name: 'Candy', description: 'Sweet treats and chocolates' },
+    { name: 'Cookies', description: 'Baked goods and biscuits' },
+    { name: 'Nuts', description: 'Healthy nuts and dried fruits' },
+    { name: 'Crackers', description: 'Savory crackers and biscuits' },
+    { name: 'Drinks', description: 'Beverages and soft drinks' },
+  ]
+
+  const categories = []
+  for (const categoryData of categoriesData) {
+    const category = await payload.create({
+      collection: 'categories',
+      data: categoryData,
+    })
+    categories.push(category)
+    console.log(`Created category: ${category.name}`)
+  }
+
   // Create delivery settings
   const deliverySettings = await payload.create({
     collection: 'delivery-settings',
     data: {
-      insideDhakaCharge: 60,
+      label: 'Default Delivery Settings',
+      insideDhakaCharge: 80,
       outsideDhakaCharge: 120,
       freeDeliveryThreshold: 2000,
+      digitalPaymentDeliveryCharge: 20,
+      shippingHighlightTitle: 'Free shipping on orders over 2000 taka',
+      shippingHighlightSubtitle: 'Digital wallet payments have a flat Tk 20 delivery charge.',
     },
   })
 
   console.log('Delivery settings created')
 
-  // Create sample snacks
-  const snacks = [
+  // Create sample items
+  const items = [
     {
       name: 'Potato Chips',
-      description: 'Crispy and delicious potato chips',
+      shortDescription: 'Crispy and delicious',
+      description: 'Our signature potato chips are made from the finest potatoes and seasoned to perfection. Each bite delivers a satisfying crunch and a burst of flavor that will keep you coming back for more.',
       price: 50,
-      category: 'chips',
+      category: categories[0].id,
       available: true,
     },
     {
       name: 'Chocolate Bar',
-      description: 'Rich and creamy chocolate bar',
+      shortDescription: 'Rich and creamy',
+      description: 'Indulge in our premium chocolate bar made with the finest cocoa beans. This smooth and creamy treat melts in your mouth, delivering a rich chocolate experience that chocolate lovers will adore.',
       price: 80,
-      category: 'candy',
+      category: categories[1].id,
       available: true,
     },
     {
       name: 'Oreo Cookies',
-      description: 'Classic sandwich cookies with cream filling',
+      shortDescription: 'Classic sandwich cookies',
+      description: 'Enjoy the classic taste of Oreo cookies with their iconic cream filling. These beloved sandwich cookies are perfect for dunking in milk or enjoying on their own for a delightful snack.',
       price: 120,
-      category: 'cookies',
+      category: categories[2].id,
       available: true,
     },
     {
       name: 'Mixed Nuts',
-      description: 'A healthy mix of almonds, cashews, and walnuts',
+      shortDescription: 'Healthy nut mix',
+      description: 'A nutritious blend of premium almonds, cashews, and walnuts. Packed with protein and healthy fats, this mix is perfect for a quick energy boost or a healthy snack option.',
       price: 200,
-      category: 'nuts',
+      category: categories[3].id,
       available: true,
     },
     {
       name: 'Salted Crackers',
-      description: 'Crunchy crackers with a hint of salt',
+      shortDescription: 'Crunchy and savory',
+      description: 'Our salted crackers offer the perfect balance of crunch and flavor. Made with quality ingredients and lightly salted for a satisfying snack that pairs well with cheese or soup.',
       price: 70,
-      category: 'crackers',
+      category: categories[4].id,
       available: true,
     },
     {
       name: 'Mineral Water',
-      description: 'Refreshing purified mineral water',
+      shortDescription: 'Refreshing and pure',
+      description: 'Stay hydrated with our purified mineral water. Sourced and treated to the highest standards, this refreshing water is perfect for any time of day and ideal for staying hydrated.',
       price: 25,
-      category: 'drinks',
+      category: categories[5].id,
       available: true,
     },
   ]
 
-  for (const snackData of snacks) {
-    const snack = await payload.create({
-      collection: 'snacks',
-      data: snackData,
+  for (const itemData of items) {
+    const item = await payload.create({
+      collection: 'items',
+      data: itemData,
     })
-    console.log(`Created snack: ${snack.name}`)
+    console.log(`Created item: ${item.name}`)
   }
 
   console.log('Seed data created successfully!')

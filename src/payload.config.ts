@@ -5,11 +5,12 @@ import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
-import { Users } from './payload/collections/Users'
-import { Media } from './payload/collections/Media'
-import { Snacks } from './payload/collections/Snacks'
-import { Orders } from './payload/collections/Orders'
-import { DeliverySettings } from './payload/collections/DeliverySettings'
+import { Users } from './payload/collections/Users.js'
+import { Media } from './payload/collections/Media.js'
+import { Items } from './payload/collections/Items.js'
+import { Orders } from './payload/collections/Orders.js'
+import { DeliverySettings } from './payload/collections/DeliverySettings.js'
+import { Categories } from './payload/collections/Categories.js'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -44,7 +45,8 @@ export default buildConfig({
   collections: [
     Users,
     Media,
-    Snacks,
+    Categories,
+    Items,
     Orders,
     DeliverySettings,
   ],
